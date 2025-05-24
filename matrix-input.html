@@ -1,85 +1,98 @@
-<!-- matrix-input.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Matrix Input</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      padding: 40px;
+      text-align: center;
+    }
+    .matrix-container {
+      margin: 30px auto;
+    }
+    h2 {
+      color: #444;
+      margin-bottom: 10px;
+    }
+    .matrix {
+      display: grid;
+      gap: 6px;
+      justify-content: center;
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
-<body style="font-family: Arial; background-color: #ffffff; text-align: center; padding: 40px;">
-  <div style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc; display: inline-block;">
-    <h1 style="color: #333;">Matrix Multiplication</h1>
-    <form id="dimensionForm">
-      <h2 style="color: #666;">Enter Matrix Dimensions</h2>
-      <label>Matrix A Rows: <input type="number" id="rowsA" min="1" required></label><br><br>
-      <label>Matrix A Columns / Matrix B Rows: <input type="number" id="colsA" min="1" required></label><br><br>
-      <label>Matrix B Columns: <input type="number" id="colsB" min="1" required></label><br><br>
-      <button type="submit" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px;">Next</button>
-    </form>
-
-    <form id="matrixForm" style="display:none; margin-top: 30px;">
-      <div id="matrixInputs"></div>
-      <button type="submit" style="margin-top: 20px; padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px;">Submit</button>
-    </form>
-  </div>
+<body>
+  <h1>Enter Matrix Values</h1>
+  <form id="matrixForm">
+    <div class="matrix-container">
+      <h2>Matrix A</h2>
+      <div id="matrixA" class="matrix"></div>
+    </div>
+    <div class="matrix-container">
+      <h2>Matrix B</h2>
+      <div id="matrixB" class="matrix"></div>
+    </div>
+    <button type="submit">Calculate</button>
+  </form>
 
   <script>
-    const dimensionForm = document.getElementById("dimensionForm");
-    const matrixForm = document.getElementById("matrixForm");
-    const matrixInputs = document.getElementById("matrixInputs");
+    const rowsA = parseInt(localStorage.getItem("rowsA"));
+    const colsA = parseInt(localStorage.getItem("colsA"));
+    const colsB = parseInt(localStorage.getItem("colsB"));
 
-    let rowsA, colsA, colsB;
+    const matrixA = document.getElementById("matrixA");
+    const matrixB = document.getElementById("matrixB");
 
-    dimensionForm.addEventListener("submit", function(event) {
-      event.preventDefault();
+    matrixA.style.gridTemplateColumns = `repeat(${colsA}, auto)`;
+    matrixB.style.gridTemplateColumns = `repeat(${colsB}, auto)`;
 
-      rowsA = parseInt(document.getElementById("rowsA").value);
-      colsA = parseInt(document.getElementById("colsA").value);
-      colsB = parseInt(document.getElementById("colsB").value);
-
-      matrixInputs.innerHTML = "";
-
-      // Matrix A
-      const matrixADiv = document.createElement("div");
-      matrixADiv.innerHTML = `<h3 style="color: #444;">Enter Matrix A</h3>`;
-      for (let i = 0; i < rowsA; i++) {
-        for (let j = 0; j < colsA; j++) {
-          const input = document.createElement("input");
-          input.type = "number";
-          input.name = `a-${i}-${j}`;
-          input.required = true;
-          input.style.margin = "4px";
-          input.style.width = "50px";
-          matrixADiv.appendChild(input);
-        }
-        matrixADiv.appendChild(document.createElement("br"));
+    for (let i = 0; i < rowsA; i++) {
+      for (let j = 0; j < colsA; j++) {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.name = `a-${i}-${j}`;
+        input.required = true;
+        matrixA.appendChild(input);
       }
+    }
 
-      // Matrix B
-      const matrixBDiv = document.createElement("div");
-      matrixBDiv.innerHTML = `<h3 style="color: #444;">Enter Matrix B</h3>`;
-      for (let i = 0; i < colsA; i++) {
-        for (let j = 0; j < colsB; j++) {
-          const input = document.createElement("input");
-          input.type = "number";
-          input.name = `b-${i}-${j}`;
-          input.required = true;
-          input.style.margin = "4px";
-          input.style.width = "50px";
-          matrixBDiv.appendChild(input);
-        }
-        matrixBDiv.appendChild(document.createElement("br"));
+    for (let i = 0; i < colsA; i++) {
+      for (let j = 0; j < colsB; j++) {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.name = `b-${i}-${j}`;
+        input.required = true;
+        matrixB.appendChild(input);
       }
+    }
 
-      matrixInputs.appendChild(matrixADiv);
-      matrixInputs.appendChild(matrixBDiv);
-
-      matrixForm.style.display = "block";
-    });
-
-    matrixForm.addEventListener("submit", function(event) {
-      event.preventDefault();
-
-      const formData = new FormData(matrixForm);
+    document.getElementById("matrixForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
 
       const matrixA = [];
       const matrixB = [];

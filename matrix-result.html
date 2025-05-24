@@ -1,62 +1,68 @@
-<!-- matrix-result.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Matrix Result</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      padding: 40px;
+      text-align: center;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+    td {
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+  </style>
 </head>
-<body style="font-family: Arial; background-color: #ffffff; padding: 40px; text-align: center;">
-  <div style="display: inline-block; padding: 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 0 10px #ccc;">
-    <h1 style="color: #333;">Matrix Multiplication Result</h1>
-    <div id="resultArea" style="margin-top: 30px;"></div>
-  </div>
+<body>
+  <h1>Resulting Matrix</h1>
+  <div id="result"></div>
 
   <script>
-    function multiplyMatrices(A, B) {
-      const result = [];
-      const rowsA = A.length;
-      const colsA = A[0].length;
-      const colsB = B[0].length;
-
-      for (let i = 0; i < rowsA; i++) {
-        result[i] = [];
-        for (let j = 0; j < colsB; j++) {
-          let sum = 0;
-          for (let k = 0; k < colsA; k++) {
-            sum += A[i][k] * B[k][j];
-          }
-          result[i][j] = sum;
-        }
-      }
-      return result;
-    }
-
     const matrixA = JSON.parse(localStorage.getItem("matrixA"));
     const matrixB = JSON.parse(localStorage.getItem("matrixB"));
-    const resultMatrix = multiplyMatrices(matrixA, matrixB);
 
-    const resultDiv = document.getElementById("resultArea");
+    const rowsA = matrixA.length;
+    const colsA = matrixA[0].length;
+    const colsB = matrixB[0].length;
+
+    const result = [];
+
+    for (let i = 0; i < rowsA; i++) {
+      result[i] = [];
+      for (let j = 0; j < colsB; j++) {
+        let sum = 0;
+        for (let k = 0; k < colsA; k++) {
+          sum += matrixA[i][k] * matrixB[k][j];
+        }
+        result[i][j] = sum;
+      }
+    }
 
     const table = document.createElement("table");
-    table.style.margin = "0 auto";
-    table.style.borderCollapse = "collapse";
-    table.style.backgroundColor = "#ffffff";
-
-    resultMatrix.forEach(row => {
+    result.forEach(row => {
       const tr = document.createElement("tr");
       row.forEach(cell => {
         const td = document.createElement("td");
-        td.textContent = cell;
-        td.style.border = "1px solid #ccc";
-        td.style.padding = "10px 15px";
-        td.style.textAlign = "center";
-        td.style.color = "#333";
+        td.innerText = cell;
         tr.appendChild(td);
       });
       table.appendChild(tr);
     });
 
-    resultDiv.appendChild(table);
+    document.getElementById("result").appendChild(table);
   </script>
 </body>
 </html>
